@@ -1,0 +1,23 @@
+﻿@inject IMainApiService apiService
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new Fluent Blazor app.
+
+@if(!string.IsNullOrEmpty(_message))
+{
+    <p>@_message</p>
+}
+
+@code{
+    private IMainApiService _apiService;
+    private string _message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _message = await apiService.GetAsync();
+    }
+}
