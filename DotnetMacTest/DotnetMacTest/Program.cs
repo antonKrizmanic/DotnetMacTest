@@ -1,11 +1,11 @@
+using DontetMacTest.Shared.FrontedService;
 using DotnetMacTest;
 using DotnetMacTest.ApiService;
 using DotnetMacTest.Components;
-using DotnetMacTest.Components.Account;
 using DotnetMacTest.Data;
+using DotnetMacTest.Services;
+using DotnetMacTest.Services.Interfaces;
 using DotnetMacTest.Shared;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -16,35 +16,18 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddFluentUIComponents();
 
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenticationStateProvider>();
-
 // Custom services
 builder.Services.AddScoped<IMainApiService, MainApiService>();
-
-
-
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+builder.Services.AddScoped<ISeedService, SeedService>();
+builder.Services.AddScoped<IPeopleExcelExporter, PeopleExcelExporter>();
+builder.Services.AddScoped<IPeoplePdfExporter, PeoplePdfExporter>();
+builder.Services.AddScoped<IWordExporter, WordExporter>();
+builder.Services.AddScoped<IJsService, JsService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
@@ -70,8 +53,5 @@ app.UseMinimalApi();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(DotnetMacTest.Client._Imports).Assembly);
-
-// Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
 
 app.Run();

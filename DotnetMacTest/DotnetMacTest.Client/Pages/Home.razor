@@ -1,23 +1,73 @@
-﻿@inject IMainApiService apiService
+﻿@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@inject IMainApiService apiService
+@inject IJsService  jsService
 @page "/"
+@using DontetMacTest.Shared.FrontedService
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>dotnet test on Mac (Apple Silicon)!</h1>
 
-Welcome to your new Fluent Blazor app.
+<FluentButton OnClick="Seed">Seed</FluentButton>
+<FluentButton OnClick="ExportToExcelAsync">Export to Excel</FluentButton>
+<FluentButton OnClick="ExportToPdfAsync">Export to Pdf</FluentButton>
+<FluentButton OnClick="ExportToWordAsync">Export to Word</FluentButton>
 
-@if(!string.IsNullOrEmpty(_message))
+@if(_people != null)
 {
-    <p>@_message</p>
+    <table>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach(var person in _people)
+        {
+            <tr>
+                <td>@person.FirstName</td>
+                <td>@person.LastName</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
 
 @code{
-    private IMainApiService _apiService;
-    private string _message;
+    private IEnumerable<PersonDto>? _people = new List<PersonDto>();
 
     protected override async Task OnInitializedAsync()
     {
-        _message = await apiService.GetAsync();
+        await this.LoadDataAsync();
+    }
+
+    public async Task Seed()
+    {
+        await apiService.SeedAsync();
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _people = await apiService.GetPeopleAsync();
+    }
+
+    private async Task ExportToExcelAsync()
+    {
+        var data = await apiService.ExportPeopleToExcelAsync();
+        await jsService.SaveAsExcelFile(data.FileName, Convert.ToBase64String(data.Data));
+    }
+
+    private async Task ExportToPdfAsync()
+    {
+        var data = await apiService.ExportPeopleToPdfAsync();
+        await jsService.SaveAsPdfFile(data.FileName, Convert.ToBase64String(data.Data));
+    }
+
+    private async Task ExportToWordAsync()
+    {
+        var data = await apiService.ExportWordAsync();
+        await jsService.SaveAsWordFile(data.FileName, Convert.ToBase64String(data.Data));
     }
 }
