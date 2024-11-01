@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: RealSQL
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+    ports:
+      - "1435:1433"
+    platform: linux/amd64
+    volumes:
+      - sqlvolume:/var/opt/mssql
+volumes:
+  sqlvolume:
