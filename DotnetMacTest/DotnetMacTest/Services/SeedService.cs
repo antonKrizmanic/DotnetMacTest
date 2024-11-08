@@ -8,7 +8,7 @@ public class SeedService(ApplicationDbContext context) : ISeedService
 {
     public async Task SeedPeople()
     {
-        FakeData.InitPeople(10);
+        FakeData.InitPeople(1000);
         try
         {
             var fakePeople = FakeData.People;
@@ -24,7 +24,7 @@ public class SeedService(ApplicationDbContext context) : ISeedService
     public async Task SeedContacts()
     {
         var peopleIds = await context.People.Select(x => x.Id).ToListAsync();
-        FakeData.InitContacts(10, peopleIds);
+        FakeData.InitContacts(1000, peopleIds);
 
         try
         {
