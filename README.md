@@ -51,6 +51,6 @@ Run this command from the folder containing the API project.
 ### Usage
 1. Seed the Database: Click on "Seed Data" in the application interface to populate the database with sample data.
 2. Export Data:
-   - Click on Export Excel to download data as an Excel file.
-   - Click on Export PDF to download data as a PDF file.
-   - Click on Export Word to download data as a Word document.
+   - Click on Export to Excel to download data as an Excel file.
+   - Click on Export to PDF to download data as a PDF file.
+   - Click on Export to Word to download data as a Word document.
